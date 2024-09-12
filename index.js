@@ -40,6 +40,12 @@ const cadastrarMeta = async () => {
 }
 
 const listarMetas = async () => {
+
+    if (metas.length == 0) {
+        mensagem = "Não existem metas!"
+        return
+    }
+
     const respostas = await checkbox({
         message: "Use as setas para mudar de meta, o espaço para marcar ou desmarcar e o Enter para finalizar essa etapa",
         choices: [...metas], // Depositando todas as metas em "escolhas"
@@ -52,7 +58,6 @@ const listarMetas = async () => {
         console.log("Nenhuma meta selecionada!")
         return
     }
-
     })
 
     respostas.forEach((resposta) => { // Vou pegar as respostas (metas selecionadas) e (forEach = para cada )  vai executar uma função que eu denominei resposta que fara  {const meta = metas.find((m) => { return m.value == resposta})
@@ -148,15 +153,6 @@ const mostrarMensagem = () => {
         mensagem = "" // Mensagem vazia 
     }
 }
-
-
-
-
-
-
-
-
-
 
 
 const start = async () => {

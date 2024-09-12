@@ -14,5 +14,9 @@
   {
     "value": "Ler por 15 minutos",
     "checked": false
+  },
+  {
+    "value": "Estudar todos os dias ",
+    "checked": false
   }
 ]
