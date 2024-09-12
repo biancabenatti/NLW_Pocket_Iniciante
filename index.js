@@ -1,4 +1,5 @@
 const { select, input, checkbox } = require('@inquirer/prompts')
+const fs = require("fs").promises
 
 let meta = {
     value: 'Tomar 3L de água por dia',
@@ -8,6 +9,16 @@ let meta = {
 let mensagem = "Bem vindo ao App de Metas";
 
 let metas = [ meta ]
+
+const carregarMetas = async () => {
+    try {
+        const dados = await fs.readFile("metas.json", "utf-8") // Vou tentar pegar os dados que estao no fs e leia o arquivo (QUAL ARQUIVO?, tipo de caracter)
+        metas = JSON.parse(dados) // Metas vai receber um JSON e o parse converte para um array de metas  
+    }
+    catch (erro) {
+        metas = []
+    }
+}
 
 const cadastrarMeta = async () => {
     const meta = await input({ message: "Digite a meta:"})
