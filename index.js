@@ -20,6 +20,10 @@ const carregarMetas = async () => {
     }
 }
 
+const salvarMetas = async () => {
+    await fs.writeFile("metas.json", JSON.stringify(metas, null, 2)) // Aguardar o fs escrever no arquiv (metas.json, como ela é um array temos que trasformar ela em um json (JSON.stringify) )
+}
+
 const cadastrarMeta = async () => {
     const meta = await input({ message: "Digite a meta:"})
 
