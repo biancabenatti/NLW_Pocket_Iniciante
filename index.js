@@ -5,6 +5,8 @@ let meta = {
     checked: false,
 }
 
+let mensagem = "Bem vindo ao App de Metas";
+
 let metas = [ meta ]
 
 const cadastrarMeta = async () => {
@@ -18,6 +20,8 @@ const cadastrarMeta = async () => {
     metas.push(
         { value: meta, checked: false }
     )
+
+    mensagem = "Meta cadastrada com sucesso!"
 }
 
 const listarMetas = async () => {
@@ -26,14 +30,14 @@ const listarMetas = async () => {
         choices: [...metas], // Depositando todas as metas em "escolhas"
         instructions: false, // Retirar as instruçoes padroes 
     })
+    metas.forEach((m) => { 
+        m.checked = false
 
     if(respostas.length == 0) {
         console.log("Nenhuma meta selecionada!")
         return
     }
 
-    metas.forEach((m) => { 
-        m.checked = false
     })
 
     respostas.forEach((resposta) => { // Vou pegar as respostas (metas selecionadas) e (forEach = para cada )  vai executar uma função que eu denominei resposta que fara  {const meta = metas.find((m) => { return m.value == resposta})
@@ -44,14 +48,109 @@ const listarMetas = async () => {
         meta.checked = true
     })
 
-    console.log('Meta(s) marcadas como concluída(s)')
+    mensagem = "'Meta(s) marcada(s) como concluída(s)'"
 
 }
 
+const metasRealizadas = async () => {
+    if (metas.length == 0) {
+        mensagem = "Não existem metas!"
+        return
+    }
+
+    const realizadas = metas.filter((meta) => { // Das metas sera realizado um filtro e ira pegar uma meta por vez e toda vez que essa meta for true ela armazena na variavel realizadas.
+        return meta.checked
+    })
+
+    if (realizadas.length == 0) {
+        mensagem = 'Não existem metas realizadas! :('
+        return
+    }
+
+    await select({
+        message: "Metas Realizadas: " + realizadas.length,
+        choices: [...realizadas]
+    })
+}
+
+const metasAbertas = async () => { 
+    if (metas.length == 0) {
+        mensagem = "Não existem metas!"
+        return
+    }
+
+    const abertas = metas.filter((meta) => {
+        return meta.checked != true
+    })
+
+    if (abertas.length == 0) {
+        mensagem = 'Não existem metas abertas! :)'
+        return
+    }
+
+    await select({
+        message: "Metas Abertas: " + abertas.length, // + abertas.length =  concatenar para aparecer a quantidade de metas abertas 
+        choices: [...abertas]
+    })
+}
+
+const deletarMetas = async () => {
+    if(metas.length == 0) {
+        mensagem = "Não existem metas!"
+        return
+    }
+
+    const metasDesmarcadas = metas.map((meta) => {
+        return { value: meta.value, checked: false }
+    })
+
+    const itemsADeletar = await checkbox({
+        message: "Selecione item para deletar",
+        choices: [...metasDesmarcadas],
+        instructions: false,
+    })
+
+    if (itemsADeletar.length == 0) {
+        mensagem = "Nenhum item para deletar!"
+        return
+    }
+
+    itemsADeletar.forEach((item) => { // Vou pegar cada item do meu itensADeletar
+        metas = metas.filter((meta) => {  // e filtrar cada meta do meu array metas   
+            return meta.value != item // Como aqui sempre retorna true, comparar cada valor meta do meu array de metas e verificar se é diferente do item, pois os itens estao todos marcados 
+        })
+    })
+
+    mensagem = "Meta(s) deleta(s) com sucesso!"
+}
+
+const mostrarMensagem = () => {
+    console.clear();
+
+    if (mensagem != "") { // Toda vez que a mensagem é diferente de vazio 
+        console.log(mensagem) // Mostrar a mensagem 
+        console.log("") // Quebra de linha
+        mensagem = "" // Mensagem vazia 
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 const start = async () => {
-    while(true){
-        
+    await carregarMetas()
+
+    while (true) {
+        mostrarMensagem()
+        await salvarMetas()
+
         const opcao = await select({
             message: "Menu >",
             choices: [
@@ -64,19 +163,39 @@ const start = async () => {
                     value: "listar"
                 },
                 {
+                    name: "Metas realizadas",
+                    value: "realizadas"
+                },
+                {
+                    name: "Metas abertas",
+                    value: "abertas"
+                },
+                {
+                    name: "Deletar metas",
+                    value: "deletar"
+                },
+                {
                     name: "Sair",
                     value: "sair"
                 }
             ]
         })
 
-        switch(opcao) {
+        switch (opcao) {
             case "cadastrar":
                 await cadastrarMeta()
-                console.log(metas)
                 break
             case "listar":
                 await listarMetas()
+                break
+            case "realizadas":
+                await metasRealizadas()
+                break
+            case "abertas":
+                await metasAbertas()
+                break
+            case "deletar":
+                await deletarMetas()
                 break
             case "sair":
                 console.log('Até a próxima!')
